@@ -1,0 +1,33 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - main: ./
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/ziwon/crawli/version.GitCommit={{.Commit}} -X github.com/ziwon/crawli/version.BuildDate={{.Date}} -X github.com/ziwon/crawli/version.Version={{.Env.VERSION}}
+    goos:
+    - windows
+    - darwin
+    - linux
+    goarch:
+    - amd64
+    - 386
+    - arm
+archive:
+  format: binary
+  name_template: "{{.ProjectName}}-{{.Os}}-{{.Arch}}"
+  replacements:
+    386: i386
+    amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
