@@ -1,0 +1,6 @@
+.*
+!/.circleci
+!/.gitignore
+!/.dockerignore
+bin
+vendor
