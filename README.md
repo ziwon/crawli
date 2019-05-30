@@ -2,7 +2,7 @@
 
 A simple cralwer
 
-<center><img src="nemo.png" width=200></center>
+<p align="center"><img src="nemo.png" width="200"></p>
 
 ## Getting started
 
