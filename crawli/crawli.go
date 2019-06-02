@@ -12,6 +12,7 @@ import (
 
 	"github.com/gocolly/colly"
 	"github.com/ziwon/crawli/config"
+	"github.com/ziwon/crawli/exporter"
 )
 
 const (
@@ -37,6 +38,7 @@ var (
 type Crawli struct {
 	*colly.Collector
 	worksheet *Worksheet
+	header    []string
 	data      map[string][]string
 }
 
@@ -46,7 +48,12 @@ func NewCrawli(worksheet *Worksheet) *Crawli {
 	crawli := &Crawli{
 		c,
 		worksheet,
+		make([]string, 0, len(worksheet.Task.Columns)),
 		make(map[string][]string),
+	}
+
+	for _, col := range worksheet.Task.Columns {
+		crawli.header = append(crawli.header, col.Column)
 	}
 
 	crawli.OnHTML(worksheet.Task.Trigger, func(el *colly.HTMLElement) {
@@ -94,7 +101,7 @@ func initColly(worksheet *Worksheet) *colly.Collector {
 
 func (c Crawli) collect(el *colly.HTMLElement, columns []*ColumnItem) {
 	key := ""
-	rows := make([]string, len(columns))
+	rows := make([]string, 0)
 	for _, col := range columns {
 		var value string
 		switch col.Type {
@@ -122,23 +129,32 @@ func (c Crawli) Run() {
 }
 
 func (c Crawli) Result() {
-	fmt.Println(c.data)
+	if config.Config().InConfig("default") {
+		home := config.Config().GetString("default.home")
+		dataRoot := path.Join(home, "data")
+		csvfilePath := fmt.Sprintf("%s/%s.csv", dataRoot, c.worksheet.Task.Label)
+		csvfile, err := os.Create(csvfilePath)
+		if err != nil {
+			panic(err)
+		}
+		defer csvfile.Close()
+
+		writer := exporter.NewWriter(csvfile)
+		writer.WriteHeader(c.header)
+		writer.Write(c.header, c.data)
+	}
 }
 
 func Collect() {
-	fmt.Println("Collect...!")
 	for _, worksheet := range worksheets {
 		fmt.Println(worksheet)
 		crawli := NewCrawli(worksheet)
 		crawli.Run()
 		crawli.Result()
 	}
-
 }
 
 func init() {
-	fmt.Println("init..")
-
 	if config.Config().InConfig("default") {
 		home := config.Config().GetString("default.home")
 		worksheetRoot := path.Join(home, "worksheets")
@@ -153,6 +169,11 @@ func init() {
 			})
 
 		if err != nil {
+			panic(err)
+		}
+
+		if len(worksheetFiles) == 0 {
+			fmt.Println("There's no worksheet files in ~/.crawli/workseets")
 			panic(err)
 		}
 
