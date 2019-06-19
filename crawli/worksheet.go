@@ -24,6 +24,7 @@ type Worksheet struct {
 		UserAgent      string        `yaml:"userAgent"`
 		Delay          int           `yaml:"delay"`
 		Async          int           `yaml:"async"`
+		Visitor        string        `yaml:"visitor,omitempty"`
 		Trigger        string        `yaml:"trigger,omitempty"`
 		Columns        []*ColumnItem `yaml:"columns"`
 	} `yaml:"task"`

@@ -1,0 +1,43 @@
+task:
+  label: "dhlottery"
+  url: "https://dhlottery.co.kr/gameResult.do?method=byWin"
+  allowedDomains:
+    - "dhlottery.co.kr"
+  userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0"
+  delay: 0
+  async: 0
+  trigger: ".win_result"
+  visitor: "#dwrNoList > option"
+  columns:
+    - column: "#"
+      selector: "h4 strong"
+      type: "text"
+      primary: true
+
+    - column: "1"
+      selector: "div.num.win > p > span:nth-of-type(1)"
+      type: "text"
+
+    - column: "2"
+      selector: "div.num.win > p > span:nth-of-type(2)"
+      type: "text"
+
+    - column: "3"
+      selector: "div.num.win > p > span:nth-of-type(3)"
+      type: "text"
+
+    - column: "4"
+      selector: "div.num.win > p > span:nth-of-type(4)"
+      type: "text"
+
+    - column: "5"
+      selector: "div.num.win > p > span:nth-of-type(5)"
+      type: "text"
+
+    - column: "6"
+      selector: "div.num.win > p > span:nth-of-type(6)"
+      type: "text"
+
+    - column: "bonus"
+      selector: "div.num.bonus> p > span:nth-of-type(1)"
+      type: "text"
